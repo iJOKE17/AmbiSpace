@@ -1,23 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import styles from "./AudioWavePlayer.module.css";
 import { Howl } from "howler";
+import { CloudHail, CirclePlay, CirclePause } from "lucide-react";
 
 interface AudioWavePlayerProps {
   audioUrl: string;
   autoplay?: boolean;
   title?: string;
+  name?: string;
+  defaultVolume?: number;
+  delayEachLoopMs?: number;
 }
 
 const AudioWavePlayer: React.FC<AudioWavePlayerProps> = ({
   audioUrl,
   autoplay = false,
   title = "",
+  name = "",
+  defaultVolume = 1,
+  delayEachLoopMs = 2000,
 }) => {
   const soundRef = useRef<Howl | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState(defaultVolume);
   const volumeSliderRef = useRef<HTMLInputElement>(null);
+  const loopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const shouldLoopRef = useRef<boolean>(false);
+
 
   // Initialize Howl instance when component mounts or audioUrl changes
   useEffect(() => {
@@ -27,23 +36,36 @@ const AudioWavePlayer: React.FC<AudioWavePlayerProps> = ({
 
     const sound = new Howl({
       src: [audioUrl],
-      loop: true,
+      loop: false, // Disable automatic looping to handle manual delay
       volume: volume,
       autoplay: autoplay,
       onload: () => {
-        console.log("Audio loaded successfully");
+        // console.log("Audio loaded successfully");
       },
       onloaderror: (id: number, error: unknown) => {
         console.error("Audio load error:", error);
       },
       onplay: () => {
         setIsPlaying(true);
+        shouldLoopRef.current = true;
       },
       onpause: () => {
         setIsPlaying(false);
+        shouldLoopRef.current = false;
       },
       onstop: () => {
         setIsPlaying(false);
+        shouldLoopRef.current = false;
+      },
+      onend: () => {
+        // Handle loop with delay
+        if (shouldLoopRef.current) {
+          loopTimeoutRef.current = setTimeout(() => {
+            if (soundRef.current && shouldLoopRef.current) {
+              soundRef.current.play();
+            }
+          }, delayEachLoopMs);
+        }
       },
       onplayerror: (id: number, error: unknown) => {
         console.error("Audio play error:", error);
@@ -57,11 +79,22 @@ const AudioWavePlayer: React.FC<AudioWavePlayerProps> = ({
     soundRef.current = sound;
 
     return () => {
+      if (loopTimeoutRef.current) {
+        clearTimeout(loopTimeoutRef.current);
+      }
       if (soundRef.current) {
         soundRef.current.unload();
       }
     };
-  }, [audioUrl, autoplay, volume]);
+  }, [audioUrl, autoplay, volume, delayEachLoopMs]);
+
+  // Update volume when defaultVolume prop changes
+  useEffect(() => {
+    setVolume(defaultVolume);
+    if (soundRef.current) {
+      soundRef.current.volume(defaultVolume);
+    }
+  }, [defaultVolume]);
 
   // Set initial slider value
   useEffect(() => {
@@ -79,8 +112,15 @@ const AudioWavePlayer: React.FC<AudioWavePlayerProps> = ({
     if (!sound) return;
 
     if (isPlaying) {
+      shouldLoopRef.current = false;
+      // Clear any pending loop timeout
+      if (loopTimeoutRef.current) {
+        clearTimeout(loopTimeoutRef.current);
+        loopTimeoutRef.current = null;
+      }
       sound.pause();
     } else {
+      shouldLoopRef.current = true;
       sound.play();
     }
   };
@@ -101,16 +141,24 @@ const AudioWavePlayer: React.FC<AudioWavePlayerProps> = ({
 
   return (
     <div className="flex flex-col items-center">
-      {title && <p className="text-sm text-gray-600 mb-2">{title}</p>}
+      <div className="flex items-center mb-4 gap-2 align-middle">
+        <span className="font-medium text-lg">
+          <CloudHail aria-hidden width={18} height={18} color="white" />
+        </span>
+        <div>{title && <p className="text-sm">{title}</p>}</div>
+      </div>
       <div className="flex items-center gap-4 align-middle">
-        <Image
-          className={styles.playButton}
-          src={isPlaying ? "/pause-button.png" : "/play-button.png"}
-          alt={isPlaying ? "Pause Button" : "Play Button"}
-          width={30}
-          height={30}
-          priority
+        <CirclePlay
+          className={`${styles.playButton} ${isPlaying ? "hidden" : "block"}`}
           onClick={togglePlay}
+          width={32}
+          height={32}
+        />
+        <CirclePause
+          className={`${styles.playButton} ${isPlaying ? "block" : "hidden"}`}
+          onClick={togglePlay}
+          width={32}
+          height={32}
         />
 
         <input
@@ -122,7 +170,7 @@ const AudioWavePlayer: React.FC<AudioWavePlayerProps> = ({
           title="Volume Control"
           value={volume}
           onChange={handleVolume}
-          className={styles.volumeSlider}
+          className={name ? `${name}-volumeSlider` : "volumeSlider"}
         />
       </div>
     </div>

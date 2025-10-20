@@ -19,7 +19,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Nunito:ital@0;1&display=swap" rel="stylesheet" />  
       </head>
       <body
-        className={`antialiased font-nunito`}
+        className="antialiased font-nunito"
       >
         {children}
       </body>

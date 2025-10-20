@@ -1,46 +1,72 @@
-.container {
-  width: 400px;
-  margin: auto;
-  text-align: center;
-}
+ .container {
+   width: 400px;
+   margin: auto;
+   text-align: center;
+ }
 
-.controls {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-}
+ .controls {
+   margin-top: 12px;
+   display: flex;
+   justify-content: center;
+   gap: 16px;
+ }
 
-.playButton {
-  cursor: pointer;
-}
+ .playButton {
+   cursor: pointer;
+ }
 
-.volumeSlider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100px;
-  height: 4px;
-  background: linear-gradient(to right, white 0%, white var(--slider-value, 100%), #d3d3d3 var(--slider-value, 100%), #d3d3d3 100%);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-}
+ .volumeSlider {
+   -webkit-appearance: none;
+   appearance: none;
+   width: 100px;
+   height: 4px;
+   background: linear-gradient(to right, white 0%, white var(--slider-value, 100%), #d3d3d3 var(--slider-value, 100%), #d3d3d3 100%);
+   border-radius: 2px;
+   outline: none;
+   cursor: pointer;
+ }
 
-.volumeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: #808080;
-  border-radius: 50%;
-  cursor: pointer;
-}
+ .cozy-cafe {
+   .volumeSlider {
+     background: #e4e4e4;
+     height: 4px;
+     border-radius: 3px;
+   }
 
-.volumeSlider::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  background: #808080;
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-}
+   .volumeSlider::-webkit-slider-thumb {
+     background: #6F4E37;
+   }
+
+   .volumeSlider::-moz-range-thumb {
+     background: #6F4E37;
+   }
+ }
+
+ .cozy-green {
+   .volumeSlider::-webkit-slider-thumb {
+     background: #1af39a;
+   }
+
+   .volumeSlider::-moz-range-thumb {
+     background: #1af39a;
+   }
+ }
+
+ .volumeSlider::-webkit-slider-thumb {
+   -webkit-appearance: none;
+   appearance: none;
+   width: 12px;
+   height: 12px;
+   background: #808080;
+   border-radius: 50%;
+   cursor: pointer;
+ }
+
+ .volumeSlider::-moz-range-thumb {
+   width: 12px;
+   height: 12px;
+   background: #808080;
+   border-radius: 50%;
+   cursor: pointer;
+   border: none;
+ }
