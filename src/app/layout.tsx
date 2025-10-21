@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Coffee Shop Atmosphere",
-  description: "Coffee Shop Atmosphere",
+  title: "AmbiSpace",
+  description: "Immerse yourself in the comforting ambiance while you work or relax.",
 };
 
 export default function RootLayout({
